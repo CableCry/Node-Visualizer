@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "../raylib/src/raylib.h"
+#include "../external/raylib/src/raylib.h"
 
 enum State
 {

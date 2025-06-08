@@ -1,7 +1,7 @@
-#include "../raylib/src/raylib.h"
-#include "../raylib/src/raymath.h"
+#include "../external/raylib/src/raylib.h"
+#include "../external/raylib/src/raymath.h"
 #define RAYGUI_IMPLEMENTATION
-#include "../raygui/src/raygui.h"
+#include "../external/raygui/src/raygui.h"
 
 #include <unordered_map>
 #include <unordered_set>
