@@ -30,16 +30,21 @@ void runSearch(std::unordered_map<std::string, std::unique_ptr<Node>>& nodes,
                bool useDFS);
 
 
-int main() 
-{    
+namespace screen_config {
     constexpr int screenWidth {1000};
     constexpr int screenHeight {1000};
+    constexpr int nodeSpacingY {60};
+}
+
+
+int main() {    
+
     bool useDFS = false;
     bool restartRequested = false;
     Rectangle dfsToggleButton = { 800, 50, 150, 30 };
     Rectangle restartButton = { 800, 100, 150, 30 };
 
-    InitWindow(screenWidth, screenHeight, "Node-Traversal");
+    InitWindow(screen_config::screenWidth, screen_config::screenHeight, "Node-Traversal");
     SetTargetFPS(60);
     
     std::unordered_map<std::string, std::unique_ptr<Node>> nodes = node_reader("test.txt");
@@ -108,16 +113,14 @@ int main()
 }
 
 // Read in the file and insert info into the nodes map
-std::unordered_map<std::string, std::unique_ptr<Node>> node_reader(const std::string& filename)
-{
+std::unordered_map<std::string, std::unique_ptr<Node>> node_reader(const std::string& filename) {
     std::ifstream file(filename);
     std::string line;
 
     std::unordered_map<std::string, std::unique_ptr<Node>> nodes;
     std::unordered_map<std::string, std::vector<std::string>> adjacency;
 
-    while (std::getline(file, line))
-    {
+    while (std::getline(file, line)) {
         std::stringstream ss(line);
         std::string from, arrow, toList;
 
@@ -182,11 +185,7 @@ void print_graph(const std::unordered_map<std::string, std::unique_ptr<Node>>& n
 void assignPositions(std::unordered_map<std::string, std::unique_ptr<Node>>& nodes, const std::string& rootId) {
     std::unordered_map<std::string, bool> visited;
     std::queue<std::pair<Node*, int>> queue;
-
-    int spacingX = 75.0f;
-    int spacingY = 75.0f;
-
-    std::unordered_map<int, int> levelCount; 
+    std::unordered_map<int, std::vector<Node*>> levels;
 
     queue.push({ nodes[rootId].get(), 0 });
     visited[rootId] = true;
@@ -195,8 +194,7 @@ void assignPositions(std::unordered_map<std::string, std::unique_ptr<Node>>& nod
         auto [node, level] = queue.front();
         queue.pop();
 
-        int col = levelCount[level]++;
-        node->setPosition({ 50.0f + col * spacingX, 50.0f + level * spacingY });
+        levels[level].push_back(node);
 
         for (Node* neighbor : node->getNextNodes()) {
             std::string id = neighbor->getId();
@@ -204,6 +202,18 @@ void assignPositions(std::unordered_map<std::string, std::unique_ptr<Node>>& nod
                 visited[id] = true;
                 queue.push({ neighbor, level + 1 });
             }
+        }
+    }
+
+    for (const auto& [level, nodesAtLevel] : levels) {
+        int count = nodesAtLevel.size();
+        float totalWidth = (count - 1) * 100;
+        float startX = (screen_config::screenWidth - totalWidth) / 2.0f;
+
+        for (int i = 0; i < count; ++i) {
+            float x = startX + i * 100;
+            float y = 100.0f + level * screen_config::nodeSpacingY;
+            nodesAtLevel[i]->setPosition({ x, y });
         }
     }
 }
@@ -227,7 +237,8 @@ void runSearch(std::unordered_map<std::string, std::unique_ptr<Node>>& nodes,
         buildBFSSteps(nodes["1"].get(), steps, parentMap);
 }
 
-void buildBFSSteps(Node* start, std::vector<Node*>& stepsOut, std::unordered_map<Node*, Node*>& parentMap) {
+void buildBFSSteps(Node* start, std::vector<Node*>& stepsOut, std::unordered_map<Node*, Node*>& parentMap) 
+{
     std::unordered_set<Node*> visited;
     std::queue<Node*> q;
     q.push(start);
@@ -278,7 +289,6 @@ void buildDFSSteps(Node* start, std::vector<Node*>& stepsOut, std::unordered_map
 }
 
 
-
 // DRAWING FUCNTIONS 
 void draw_node(Node& node)
 {
@@ -302,8 +312,7 @@ void draw_node(Node& node)
     Color color = GRAY;
     std::string label = node.getId();
 
-    switch (node.getState())
-    {
+    switch (node.getState()) {
         case State::UNVISITED: color = GRAY; break;
         case State::VISITING: color = YELLOW; break;
         case State::VISITED: color = ORANGE; break;
@@ -314,9 +323,13 @@ void draw_node(Node& node)
         break;
     }
     
-    if ( label == "-1")
-    {
+    if ( label == "-1") {
         label = "End";
+        color = RED;
+    }
+
+    if ( label == "1") {
+        label = "START";
         color = RED;
     }
 
