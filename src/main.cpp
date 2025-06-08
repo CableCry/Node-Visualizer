@@ -51,7 +51,7 @@ int main()
 
     unsigned int stepIndex = 0;
     float stepTimer = 0.0f;
-    float stepDelay = 0.2f;
+    float stepDelay = 0.25f;
 
     bool pathTraced = false;
 

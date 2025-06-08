@@ -59,7 +59,8 @@
 			"numeric": "cpp",
 			"random": "cpp",
 			"numbers": "cpp",
-			"ctime": "cpp"
+			"ctime": "cpp",
+			"unordered_set": "cpp"
 		},
 		"git.autoRepositoryDetection": false,
 		"git.enabled": false
