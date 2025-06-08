@@ -306,9 +306,6 @@ void draw_node(Node& node)
         DrawLineV(start, end, BLACK);
     }
     
-
-
-
     Color color = GRAY;
     std::string label = node.getId();
 
