@@ -59,7 +59,7 @@ The program reads a graph from test.txt (or any .txt you load manually). The for
 11 -> -1
 ```
 Nodes can point to zero or more nodes (comma-separated).
-An end node should point to -1 to represent the exit.
+The start node must have a value of 1 and end node should have a value of -1.
 Empty lines or dangling arrows are ignored.
 
 
